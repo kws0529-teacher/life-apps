@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>우성쌤의 일상활용 앱</title>
+<title>우성쌤의 생활 앱</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 <style>
   :root{
@@ -22,7 +22,7 @@
     overflow-x:hidden;
   }
 
-  /* 배경 배경 오로라 블러 효과 */
+  /* 배경 오로라 블러 효과 */
   .blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.35;z-index:0;pointer-events:none;}
   .blob1{width:420px;height:420px;background:#f7c9d8;top:-140px;right:-120px;}
   .blob2{width:380px;height:380px;background:#c7d9f7;bottom:-160px;left:-140px;}
@@ -46,8 +46,8 @@
 
   .grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(230px,1fr));gap:16px;}
 
-  /* 카드 기본 스타일 */
-  .card{
+  /* 카드 클릭 가능한 링크 스타일 */
+  a.card{
     position:relative;
     display:flex;
     flex-direction:column;
@@ -61,7 +61,7 @@
     overflow:hidden;
     transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
   }
-  .card::before{
+  a.card::before{
     content:"";
     position:absolute;
     top:-30px;right:-30px;
@@ -70,7 +70,7 @@
     background:var(--sc,#3b82f6);
     opacity:.10;
   }
-  .card:hover{
+  a.card:hover{
     transform:translateY(-3px);
     border-color:var(--sc,#3b82f6);
     box-shadow:0 14px 28px -16px rgba(15,23,42,.18);
@@ -87,6 +87,7 @@
   }
   .card-title{font-weight:700;font-size:1.05rem;}
   .card-desc{color:var(--ink-soft);font-size:.87rem;margin-top:4px;line-height:1.55;}
+  .card-arrow{align-self:flex-end;color:var(--sc,#3b82f6);font-size:1.1rem;font-weight:700;}
 
   footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.85rem;position:relative;z-index:1;}
 
@@ -103,34 +104,45 @@
 
 <div class="wrap">
   <header>
-    <h1>우성쌤의 생활 앱r</h1>
-    <p>우성쌤의 생활 앱을 모아두는 곳입니다</p>
+    <h1>우성쌤의 생활 앱</h1>
+    <p>우성쌤의 생활 앱을 모아두는 공간입니다.</p>
   </header>
 
-  <!-- 메인 루틴 섹션 (JS에서 데이터가 여기에 렌더링됩니다) -->
+  <!-- 앱 목록 섹션 -->
   <div class="subject" style="--sc:#3b82f6;">
     <div class="subject-head">
       <span class="subject-dot"></span>
       <h2>생활 앱 목록</h2>
     </div>
-    <div id="routine-list" class="grid">
-      <!-- 앱 스크립트가 실행되기 전 기본 안내 카드 -->
-      <div class="card">
+    <div class="grid">
+      
+      <!-- 카드 전체가 클릭 가능한 운동 루틴 메이커 링크 -->
+      <a class="card" href="workout routine maker.html">
         <span class="card-mark">🏋️</span>
         <div>
-          <span class="card-title">루틴을 불러오는 중...</span>
-          <p class="card-desc">잠시만 기다려 주세요.</p>
+          <span class="card-title">운동 루틴 메이커</span>
+          <p class="card-desc">나만의 운동 루틴을 작성하고 세트별 목표를 관리하세요.</p>
         </div>
-      </div>
+        <span class="card-arrow">→</span>
+      </a>
+
+      <!-- 💡 나중에 새로운 앱을 추가하고 싶다면 아래 주석을 참고해서 복사하시면 됩니다 -->
+      <!--
+      <a class="card" href="새로운앱파일명.html">
+        <span class="card-mark">📱</span>
+        <div>
+          <span class="card-title">앱 이름</span>
+          <p class="card-desc">앱 간단 설명</p>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+      -->
+
     </div>
   </div>
 
   <footer>Routine Maker · 개인 브라우저 LocalStorage 저장 방식 지원</footer>
 </div>
 
-<!-- 작성하신 JavaScript 스크립트 연결 (파일명이 다르다면 파일명에 맞게 수정하세요) -->
-<script src="workout routine maker"></script>
 </body>
 </html>
-
-<a href="workout routine maker.html">운동 루트인</a>
