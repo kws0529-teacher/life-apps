@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>루틴메이커</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#121319;
+    --surface:#1B1D26;
+    --surface2:#242732;
+    --text:#F3F1EA;
+    --muted:#8C8F9C;
+    --muted2:#5D6070;
+    --accent:#FF4B2E;
+    --accent-dim:#4A241C;
+    --accent2:#C9F031;
+    --accent2-dim:#33391A;
+    --border:rgba(243,241,234,0.08);
+    --danger:#FF4B2E;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  #app{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:var(--bg);
+    position:relative;
+    padding-bottom:78px;
+  }
+  h1,h2,h3,.display{
+    font-family:'Bebas Neue',sans-serif;
+    letter-spacing:0.5px;
+    font-weight:400;
+    margin:0;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  header.top{
+    padding:22px 20px 14px;
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(180deg,var(--bg) 70%,rgba(18,19,25,0));
+  }
+  header.top .kicker{
+    color:var(--accent);
+    font-size:11px;
+    letter-spacing:2px;
+    font-weight:700;
+    text-transform:uppercase;
+  }
+  header.top h1{font-size:34px; line-height:1;}
+  main{flex:1; padding:0 20px 24px;}
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-bottom:14px;
+  }
+  .card.accent-card{
+    background:linear-gradient(135deg,var(--surface2),var(--surface));
+    border-color:rgba(255,75,46,0.25);
+  }
+  .row{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .label{color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:1px; font-weight:600;}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    background:var(--accent); color:#12080a; border:none;
+    font-weight:800; font-size:14px; padding:13px 18px; border-radius:10px;
+    cursor:pointer; width:100%; font-family:'Inter',sans-serif;
+    transition:transform .15s ease, opacity .15s ease;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn.secondary{background:var(--surface2); color:var(--text); border:1px solid var(--border);}
+  .btn.ghost{background:transparent; color:var(--muted); border:1px solid var(--border);}
+  .btn.small{width:auto; padding:8px 14px; font-size:12px;}
+  .btn.lime{background:var(--accent2); color:#1a1e08;}
+  .btn:disabled{opacity:0.4; cursor:not-allowed;}
+  input,select,textarea{
+    width:100%; background:var(--surface2); border:1px solid var(--border);
+    color:var(--text); padding:11px 12px; border-radius:9px; font-size:14px;
+    font-family:'Inter',sans-serif;
+  }
+  input:focus,select:focus,textarea:focus{outline:1.5px solid var(--accent);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px; font-weight:600;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .chip-group{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    padding:9px 14px; border-radius:20px; border:1px solid var(--border);
+    background:var(--surface2); color:var(--muted); font-size:13px; font-weight:600;
+    cursor:pointer; user-select:none;
+  }
+  .chip.active{background:var(--accent); color:#12080a; border-color:var(--accent);}
+  .chip.active.alt{background:var(--accent2); color:#1a1e08; border-color:var(--accent2);}
+  nav.bottom{
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+    width:100%; max-width:480px; background:var(--surface);
+    border-top:1px solid var(--border);
+    display:flex; z-index:30;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  nav.bottom button{
+    flex:1; background:none; border:none; color:var(--muted2);
+    padding:12px 4px 10px; font-family:'Inter'; font-size:11px; font-weight:700;
+    display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer;
+  }
+  nav.bottom button.active{color:var(--accent2);}
+  nav.bottom svg{width:20px; height:20px;}
+  .exercise-item{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 0; border-bottom:1px solid var(--border); gap:10px;
+  }
+  .exercise-item:last-child{border-bottom:none;}
+  .exercise-name{font-weight:700; font-size:14.5px;}
+  .exercise-sub{color:var(--muted); font-size:12px; margin-top:2px;}
+  .weight-row{
+    display:flex; align-items:center; gap:6px; margin-top:8px; font-size:12.5px; color:var(--muted);
+  }
+  .weight-row input.actual-weight{
+    width:64px; padding:6px 8px; font-family:'JetBrains Mono',monospace; font-weight:700;
+    color:var(--accent2); text-align:center;
+  }
+  .db-note{color:var(--muted2); font-size:11px;}
+  .status-bar{margin-top:12px; display:flex; flex-direction:column; gap:6px;}
+  .status-row{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--surface2); border:1px solid var(--border); border-radius:10px;
+    padding:9px 12px; font-size:12.5px; color:var(--muted);
+  }
+  .status-row .mono{font-weight:800; font-size:14.5px; color:var(--text);}
+  .status-row.rest{background:var(--accent-dim); border-color:rgba(255,75,46,0.3);}
+  .status-row.rest .mono{color:var(--accent);}
+  .status-row .btn.secondary.small{width:auto; padding:6px 12px; font-size:11px;}
+  .hint-text{color:var(--muted); font-size:11.5px; margin-top:7px; line-height:1.5;}
+  .exercise-desc{color:var(--muted); font-size:12.5px; margin-top:6px; line-height:1.5;}
+  .video-link{
+    display:inline-block; margin-top:6px; font-size:12px; font-weight:700;
+    color:var(--accent2); text-decoration:none;
+  }
+  .video-link:active{opacity:0.7;}
+  .stat-num{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent2);}
+  .diff-btns{display:flex; gap:6px; margin-top:8px;}
+  .diff-btn{
+    flex:1; padding:7px 4px; border-radius:7px; border:1px solid var(--border);
+    background:var(--surface2); color:var(--muted); font-size:11px; font-weight:700; cursor:pointer;
+  }
+  .diff-btn.sel{background:var(--accent2); color:#1a1e08; border-color:var(--accent2);}
+  .set-dots{display:flex; gap:5px; margin-top:9px;}
+  .set-dot{width:16px; height:16px; border-radius:50%; border:2px solid var(--muted2); background:transparent;}
+  .set-dot.done{background:var(--accent2); border-color:var(--accent2);}
+  .set-dot.current{border-color:var(--accent); box-shadow:0 0 0 2px rgba(255,75,46,0.2);}
+  .set-action-row{display:flex; gap:8px; margin-top:9px;}
+  .set-action-row .btn{width:auto;}
+  .rest-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin-top:9px; background:var(--accent-dim); border:1px solid rgba(255,75,46,0.3);
+    border-radius:9px; padding:9px 12px;
+  }
+  .rest-timer{font-size:17px; font-weight:700; color:var(--accent);}
+  .rest-row .btn{width:auto; padding:7px 12px; font-size:11px;}
+  .bodypart-tag{
+    display:inline-block; font-size:10px; font-weight:800; padding:3px 8px;
+    border-radius:5px; letter-spacing:0.5px; margin-right:4px;
+  }
+  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center;}
+  .cal-dow{font-size:10px; color:var(--muted); font-weight:700; padding-bottom:6px;}
+  .cal-day{
+    aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    border-radius:8px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer;
+    position:relative; background:var(--surface2); border:1px solid transparent;
+  }
+  .cal-day.empty{visibility:hidden;}
+  .cal-day.today{border-color:var(--accent);}
+  .cal-day .dots{display:flex; gap:2px; margin-top:3px;}
+  .dot{width:5px; height:5px; border-radius:50%;}
+  .modal-bg{
+    position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:50;
+    display:flex; align-items:flex-end; justify-content:center;
+  }
+  .modal{
+    background:var(--surface); width:100%; max-width:480px; border-radius:18px 18px 0 0;
+    padding:20px; max-height:85vh; overflow-y:auto;
+  }
+  .modal-handle{width:36px; height:4px; background:var(--muted2); border-radius:2px; margin:0 auto 16px;}
+  .empty-state{text-align:center; padding:40px 10px; color:var(--muted);}
+  .banner{
+    background:var(--accent2-dim); border:1px solid rgba(201,240,49,0.35); border-radius:12px;
+    padding:12px 14px; font-size:13px; color:var(--accent2); margin-bottom:14px; font-weight:600;
+  }
+  .divider{height:1px; background:var(--border); margin:16px 0;}
+  ::-webkit-scrollbar{width:0;height:0;}
+</style>
+</head>
+<body>
+<div id="app"><div style="padding:40px 20px;color:var(--muted)">불러오는 중...</div></div>
+
+<script>
+/* ---------------- 데이터 ---------------- */
+const BODYPARTS = ["가슴","등","어깨","하체","팔","코어"];
+const BP_COLOR = {"가슴":"#FF4B2E","등":"#4EA8FF","어깨":"#C9F031","하체":"#FF9F4E","팔":"#B98CFF","코어":"#4EFFC9"};
+
+const EXLIB = {
+  "가슴":{
+    gym:[
+      {n:"벤치프레스(바벨)",lv:2,desc:"가슴 중앙을 넓게 펴고, 팔꿈치는 45도 각도로 내려요.",foc:"중앙"},
+      {n:"인클라인 덤벨 프레스",lv:2,desc:"벤치 30~45도, 상부 가슴을 집중적으로 자극해요.",foc:"상부"},
+      {n:"체스트프레스 머신",lv:1,desc:"등을 시트에 밀착하고 가슴 힘으로 밀어내요.",foc:"중앙"},
+      {n:"펙덱 플라이",lv:1,desc:"팔꿈치를 살짝 굽힌 채 가슴으로 모아줘요.",foc:"중앙"},
+      {n:"케이블 크로스오버",lv:2,desc:"가슴 앞에서 손을 교차하며 스트레칭을 강조해요.",foc:"중앙"},
+      {n:"디클라인 프레스",lv:3,desc:"벤치를 아래로 15~30도, 하부 가슴을 자극해요.",foc:"하부"}
+    ],
+    bodyweight:[
+      {n:"푸시업",lv:1,desc:"몸을 일직선으로 유지하고 팔꿈치는 45도로 굽혀요.",foc:"중앙"},
+      {n:"다이아몬드 푸시업",lv:2,desc:"손을 모아 삼두와 안쪽 가슴을 강조해요.",foc:"중앙"},
+      {n:"디클라인 푸시업",lv:2,desc:"발을 높은 곳에 올려 상부 가슴을 자극해요.",foc:"상부"},
+      {n:"딥스(의자)",lv:2,desc:"팔꿈치가 어깨보다 낮아지지 않게 내려가요.",foc:"하부"}
+    ]
+  },
+  "등":{
+    gym:[
+      {n:"랫풀다운",lv:1,desc:"가슴을 내밀고 견갑골을 모으며 당겨요.",foc:"광배(넓은등)"},
+      {n:"시티드 케이블 로우",lv:1,desc:"허리를 곧게 세우고 팔꿈치를 뒤로 당겨요.",foc:"중부등"},
+      {n:"바벨 로우",lv:2,desc:"상체를 45도 숙이고 배 쪽으로 당겨요.",foc:"중부등"},
+      {n:"데드리프트",lv:3,desc:"허리 중립을 유지하고 바벨을 몸에 붙여 들어요.",foc:"전체(하부등 포함)"},
+      {n:"어시스트 풀업머신",lv:2,desc:"턱이 바 위로 올라오도록 당겨요.",foc:"광배(넓은등)"},
+      {n:"원암 덤벨 로우",lv:2,desc:"벤치를 짚고 팔꿈치를 뒤로 크게 당겨요.",foc:"중부등"}
+    ],
+    bodyweight:[
+      {n:"풀업",lv:3,desc:"견갑골부터 당겨 턱이 바 위로 오도록 해요.",foc:"광배(넓은등)"},
+      {n:"친업",lv:2,desc:"손바닥이 몸쪽을 향해 이두 개입이 늘어나요.",foc:"광배·이두"},
+      {n:"인버티드 로우",lv:2,desc:"몸을 일직선으로 두고 가슴을 바에 붙여요.",foc:"중부등"},
+      {n:"슈퍼맨",lv:1,desc:"팔다리를 동시에 들어올려 허리를 강화해요.",foc:"하부등"}
+    ]
+  },
+  "어깨":{
+    gym:[
+      {n:"숄더프레스 머신",lv:1,desc:"팔꿈치가 과도하게 벌어지지 않게 밀어요.",foc:"전면"},
+      {n:"덤벨 숄더프레스",lv:2,desc:"손목을 곧게 세우고 코어에 힘을 줘요.",foc:"전면"},
+      {n:"사이드 레터럴 레이즈",lv:1,desc:"팔꿈치를 살짝 굽혀 어깨 높이까지 올려요.",foc:"측면"},
+      {n:"페이스풀",lv:1,desc:"케이블을 얼굴 쪽으로, 팔꿈치를 높게 유지해요.",foc:"후면"},
+      {n:"리어델트 플라이",lv:2,desc:"상체를 숙이고 뒤쪽 어깨로 들어올려요.",foc:"후면"},
+      {n:"업라이트 로우",lv:2,desc:"팔꿈치가 손목보다 높게 오도록 당겨요.",foc:"측면"}
+    ],
+    bodyweight:[
+      {n:"파이크 푸시업",lv:2,desc:"엉덩이를 높이 들고 머리를 아래로 내려요.",foc:"전면"},
+      {n:"힌두 푸시업",lv:2,desc:"몸을 파도치듯 아래에서 위로 밀어 올려요.",foc:"전면"},
+      {n:"월워크",lv:3,desc:"벽을 짚고 발을 걸어 위로 올라가요.",foc:"전면·코어"}
+    ]
+  },
+  "하체":{
+    gym:[
+      {n:"레그프레스",lv:1,desc:"무릎이 발끝 방향을 향하게 밀어요.",foc:"전체"},
+      {n:"스쿼트(바벨)",lv:2,desc:"허리는 중립, 무릎은 발끝을 넘지 않게 해요.",foc:"전체"},
+      {n:"레그컬",lv:1,desc:"천천히 굽히며 뒤허벅지를 자극해요.",foc:"뒤허벅지(햄스트링)"},
+      {n:"레그익스텐션",lv:1,desc:"무릎을 완전히 다 펴지 않아요.",foc:"앞허벅지(대퇴사두)"},
+      {n:"덤벨 런지",lv:2,desc:"뒷무릎이 바닥에 닿을 듯 내려가요.",foc:"전체"},
+      {n:"힙쓰러스트",lv:2,desc:"엉덩이를 끝까지 조이며 들어올려요.",foc:"엉덩이"},
+      {n:"카프레이즈 머신",lv:1,desc:"발끝으로 서서 최대한 높이 올려요.",foc:"종아리"}
+    ],
+    bodyweight:[
+      {n:"맨몸 스쿼트",lv:1,desc:"허벅지가 바닥과 평행할 때까지 앉아요.",foc:"전체"},
+      {n:"런지",lv:1,desc:"무릎 90도, 상체는 곧게 세워요.",foc:"전체"},
+      {n:"불가리안 스플릿 스쿼트",lv:2,desc:"뒷발을 벤치에 올리고 앞다리로 지지해요.",foc:"전체·엉덩이"},
+      {n:"점프 스쿼트",lv:2,desc:"착지할 때 무릎을 부드럽게 받아줘요.",foc:"전체(파워)"},
+      {n:"월싯",lv:2,desc:"벽에 등을 대고 허벅지를 수평으로 유지해요.",foc:"앞허벅지(대퇴사두)"}
+    ]
+  },
+  "팔":{
+    gym:[
+      {n:"바벨컬",lv:1,desc:"팔꿈치를 고정하고 반동 없이 들어올려요.",foc:"이두"},
+      {n:"덤벨컬",lv:1,desc:"손목을 돌리며 이두를 끝까지 수축해요.",foc:"이두"},
+      {n:"케이블 트라이셉스 푸시다운",lv:1,desc:"팔꿈치를 옆구리에 고정하고 밀어내요.",foc:"삼두"},
+      {n:"트라이셉스 딥머신",lv:1,desc:"삼두로 미는 느낌에 집중해요.",foc:"삼두"},
+      {n:"해머컬",lv:2,desc:"손바닥을 마주보게 잡아 전완도 함께 자극해요.",foc:"이두·전완"},
+      {n:"오버헤드 익스텐션",lv:2,desc:"팔꿈치를 귀 옆에 고정하고 펴줘요.",foc:"삼두"}
+    ],
+    bodyweight:[
+      {n:"체어딥스",lv:1,desc:"팔꿈치가 90도가 될 때까지만 내려가요.",foc:"삼두"},
+      {n:"클로즈그립 푸시업",lv:2,desc:"손을 좁게 짚어 삼두에 집중해요.",foc:"삼두"},
+      {n:"딥스",lv:2,desc:"가슴을 앞으로 살짝 숙이면 가슴도 함께 자극돼요.",foc:"삼두·가슴"}
+    ]
+  },
+  "코어":{
+    gym:[
+      {n:"케이블 크런치",lv:1,desc:"무릎을 꿇고 배의 힘으로 굽혀요.",foc:"상부복근"},
+      {n:"행잉 레그레이즈",lv:2,desc:"반동 없이 다리를 들어올려요.",foc:"하부복근"},
+      {n:"로만체어 백익스텐션",lv:1,desc:"허리를 과하게 젖히지 않도록 주의해요.",foc:"하부등"}
+    ],
+    bodyweight:[
+      {n:"플랭크",lv:1,desc:"엉덩이가 너무 들리지 않게 일직선을 유지해요.",foc:"전체코어"},
+      {n:"크런치",lv:1,desc:"목을 당기지 말고 복부 힘으로 굽혀요.",foc:"상부복근"},
+      {n:"레그레이즈",lv:1,desc:"허리를 바닥에 붙인 채 다리를 들어요.",foc:"하부복근"},
+      {n:"마운틴클라이머",lv:1,desc:"코어를 유지하며 무릎을 빠르게 당겨요.",foc:"전체코어·유산소"},
+      {n:"러시안 트위스트",lv:1,desc:"허리를 곧게 세우고 좌우로 회전해요.",foc:"옆구리(복사근)"},
+      {n:"사이드 플랭크",lv:2,desc:"엉덩이가 처지지 않게 일직선을 유지해요.",foc:"옆구리(복사근)"}
+    ]
+  }
+};
+
+const CARDIO = [
+  {n:"인클라인 걷기",desc:"경사 6~10%, 빠른 걷기"},
+  {n:"조깅",desc:"가벼운 대화 가능한 페이스"},
+  {n:"사이클",desc:"실내 자전거, 중강도"},
+  {n:"줄넘기",desc:"1분 진행 · 30초 휴식 반복"},
+  {n:"로잉머신",desc:"전신 유산소"},
+  {n:"천국의 계단(스텝밀)",desc:"계단을 오르는 유산소 기구, 하체 자극도 큼"},
+  {n:"HIIT 서킷",desc:"버피·마운틴클라이머 등 고강도 인터벌"}
+];
+
+const GOALS = {
+  bulk:{label:"벌크업 (근육량 증가)",desc:"고중량·저반복 위주, 부위 분할, 유산소 최소화"},
+  cut:{label:"다이어트 (체지방 감소)",desc:"근력+유산소 병행, 세트 간 휴식 짧게"},
+  health:{label:"유지 · 건강 관리",desc:"전신 밸런스 위주, 무리 없는 강도"},
+  lean:{label:"린 애슬레틱 (슬림 탄탄 라인)",desc:"어깨·코어 강조 + 낮은 체지방, 중강도 고반복과 유산소 병행으로 선명한 근육 라인을 만드는 목표"}
+};
+
+const SPLIT_PLANS = {
+  2:[["가슴","등","어깨"],["하체","팔","코어"]],
+  3:[["가슴","팔"],["등","코어"],["하체","어깨"]],
+  4:[["가슴","팔"],["등","코어"],["하체"],["어깨","코어"]],
+  5:[["가슴"],["등"],["하체"],["어깨"],["팔","코어"]],
+  6:[["가슴"],["등"],["하체"],["어깨"],["팔"],["코어"]]
+};
+const DAY_PATTERNS = {2:[1,4],3:[1,3,5],4:[1,2,4,5],5:[1,2,3,4,5],6:[1,2,3,4,5,6]};
+const DOW = ["일","월","화","수","목","금","토"];
+
+/* ---------------- 상태 ---------------- */
+let state = null;
+let currentTab = "today";
+let calMonthOffset = 0;
+let pendingRoutine = null; // {bodyParts, environment, duration, items:[...], rest:{endAt}|null, startedAt}
+let globalRestTimerId = null;
+let wakeLock = null;
+
+function restSeconds(it){
+  const goal = state.profile.goal;
+  if(!it.isGym) return 45;
+  return (goal==="bulk") ? 90 : 60;
+}
+function fmtTime(s){
+  s = Math.max(0, s);
+  const m = Math.floor(s/60), sec = s%60;
+  return String(m).padStart(2,"0")+":"+String(sec).padStart(2,"0");
+}
+function fmtElapsed(ms){
+  const total = Math.max(0, Math.floor(ms/1000));
+  const h = Math.floor(total/3600), m = Math.floor((total%3600)/60), s = total%60;
+  return h>0 ? `${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}` : `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+}
+function stopGlobalRest(){
+  clearInterval(globalRestTimerId);
+  globalRestTimerId = null;
+}
+function startGlobalRest(seconds){
+  pendingRoutine.rest = {endAt: Date.now()+seconds*1000};
+  persistPending();
+  runGlobalRestTick();
+}
+function runGlobalRestTick(){
+  stopGlobalRest();
+  const tick = ()=>{
+    if(!pendingRoutine || !pendingRoutine.rest){ stopGlobalRest(); return; }
+    const remaining = Math.max(0, Math.round((pendingRoutine.rest.endAt-Date.now())/1000));
+    const el = document.getElementById('global-rest-timer');
+    if(el) el.textContent = "휴식 " + fmtTime(remaining);
+    if(remaining<=0){
+      stopGlobalRest();
+      pendingRoutine.rest = null;
+      persistPending();
+      if(navigator.vibrate) navigator.vibrate(200);
+      render();
+    }
+  };
+  tick();
+  globalRestTimerId = setInterval(tick, 500);
+}
+function persistPending(){
+  if(state) state.pendingRoutine = pendingRoutine;
+  saveState();
+}
+
+/* ---- 화면 꺼짐 방지 (Wake Lock) ---- */
+async function requestWakeLock(){
+  try{
+    if("wakeLock" in navigator){
+      wakeLock = await navigator.wakeLock.request("screen");
+      wakeLock.addEventListener("release", ()=>{ wakeLock = null; });
+    }
+  }catch(e){ /* 지원 안 하는 브라우저는 조용히 무시 */ }
+}
+function releaseWakeLock(){
+  if(wakeLock){ wakeLock.release().catch(()=>{}); wakeLock = null; }
+}
+document.addEventListener("visibilitychange", async ()=>{
+  if(document.visibilityState==="visible" && pendingRoutine){
+    await requestWakeLock();
+  }
+});
+
+/* ---- 커스텀 알림/확인 모달 (일부 환경에서 alert/confirm이 막혀 있어 직접 구현) ---- */
+function showAlert(message){
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  bg.innerHTML = `
+    <div class="modal" style="text-align:center;">
+      <div class="modal-handle"></div>
+      <p style="font-size:14.5px; margin:10px 0 18px; line-height:1.5;">${message}</p>
+      <button class="btn" id="al-ok">확인</button>
+    </div>`;
+  document.body.appendChild(bg);
+  const close = ()=>bg.remove();
+  bg.querySelector('#al-ok').onclick = close;
+  bg.onclick = (e)=>{ if(e.target===bg) close(); };
+}
+function showConfirm(message, onYes){
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  bg.innerHTML = `
+    <div class="modal" style="text-align:center;">
+      <div class="modal-handle"></div>
+      <p style="font-size:14.5px; margin:10px 0 18px; line-height:1.5;">${message}</p>
+      <div style="display:flex; gap:10px;">
+        <button class="btn secondary" id="cf-no">취소</button>
+        <button class="btn" id="cf-yes">확인</button>
+      </div>
+    </div>`;
+  document.body.appendChild(bg);
+  bg.querySelector('#cf-no').onclick = ()=>bg.remove();
+  bg.querySelector('#cf-yes').onclick = ()=>{ bg.remove(); onYes(); };
+  bg.onclick = (e)=>{ if(e.target===bg) bg.remove(); };
+}
+
+function defaultState(){
+  return {
+    profile:null,
+    schedule:{days:[], rotation:[]},
+    exStats:{}, // name -> {weight,reps,sets,tier,difficulty}
+    logs:{}, // 'YYYY-MM-DD' -> {bodyParts:[], items:[...], cardio:null, duration, environment}
+    settings:{notify:false, notifyTime:"19:00"},
+    pendingRoutine:null // 진행 중인 루틴 (새로고침/화면꺼짐 대비 자동 저장)
+  };
+}
+
+const STORAGE_KEY = "routine-maker-state-v1";
+async function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return {...defaultState(), ...JSON.parse(raw)};
+  }catch(e){ /* 최초 실행이거나 오류 */ }
+  return defaultState();
+}
+async function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e){ console.error('저장 실패', e); }
+}
+
+function todayStr(d=new Date()){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+/* ---------------- 스케줄 생성 ---------------- */
+function buildSchedule(daysPerWeek){
+  const n = Math.max(2, Math.min(6, daysPerWeek));
+  const days = DAY_PATTERNS[n];
+  const rotation = SPLIT_PLANS[n];
+  return {days, rotation};
+}
+function todaysBodyParts(){
+  const dow = new Date().getDay();
+  const idx = state.schedule.days.indexOf(dow);
+  if(idx === -1) return null;
+  const cycle = Math.floor((daysSinceEpoch())/1) ; // placeholder not used
+  return state.schedule.rotation[ rotationIndexForToday() ];
+}
+function rotationIndexForToday(){
+  const dow = new Date().getDay();
+  const pos = state.schedule.days.indexOf(dow);
+  if(pos===-1) return -1;
+  return pos % state.schedule.rotation.length;
+}
+
+/* ---------------- 루틴 생성 (점진적 과부하 반영) ---------------- */
+function slotsForDuration(min){
+  if(min<=30) return 3;
+  if(min<=60) return 6;
+  return 9;
+}
+function getExStat(name){
+  return state.exStats[name] || {weight:null, reps:10, sets:3, tier:1, difficulty:"medium"};
+}
+function suggestNext(stat, isGym){
+  let {weight,reps,sets,difficulty} = stat;
+  reps = reps||10; sets = sets||3;
+  if(isGym){
+    weight = weight || 10;
+    if(difficulty==="easy") weight = Math.round(weight*1.05*2)/2;
+    else if(difficulty==="medium") weight = Math.round(weight*1.025*2)/2;
+    else if(difficulty==="hard") weight = weight;
+    else if(difficulty==="veryhard") weight = Math.round(weight*0.9*2)/2;
+    return {weight, reps:Math.max(6,Math.min(12,reps)), sets};
+  } else {
+    if(difficulty==="easy") reps = reps+2;
+    else if(difficulty==="medium") reps = reps+1;
+    else if(difficulty==="hard") reps = reps;
+    else if(difficulty==="veryhard") reps = Math.max(6,reps-3);
+    return {weight:null, reps:Math.min(25,reps), sets};
+  }
+}
+function buildPool(bodyPart, env, expLevelCap, focus){
+  const lib = EXLIB[bodyPart];
+  let pool = [];
+  if(env==="gym") pool = lib.gym.map(e=>({...e,isGym:true}));
+  else if(env==="bodyweight") pool = lib.bodyweight.map(e=>({...e,isGym:false}));
+  else pool = [...lib.gym.map(e=>({...e,isGym:true})), ...lib.bodyweight.map(e=>({...e,isGym:false}))];
+  pool = pool.filter(e=>e.lv<=expLevelCap);
+  if(pool.length===0) pool = (env==="bodyweight"?lib.bodyweight:lib.gym).map(e=>({...e,isGym:env!=="bodyweight"}));
+  if(focus) pool = pool.filter(e=>e.foc===focus);
+  return pool;
+}
+function focusOptions(bodyPart, env, expLevelCap){
+  const pool = buildPool(bodyPart, env, expLevelCap, null);
+  return [...new Set(pool.map(e=>e.foc))];
+}
+function isDumbbell(name){ return name.includes("덤벨"); }
+function pickExercises(bodyPart, env, count, expLevelCap){
+  let pool = buildPool(bodyPart, env, expLevelCap, null);
+  pool.sort((a,b)=>a.lv-b.lv);
+  const picked = [];
+  for(let i=0;i<count && pool.length>0;i++){
+    picked.push(pool[i % pool.length]);
+  }
+  return picked;
+}
+function expCap(experience){
+  return experience==="beginner"?2:(experience==="intermediate"?3:3);
+}
+function makeItem(bodyPart, ex){
+  const stat = getExStat(ex.n);
+  const sug = suggestNext(stat, ex.isGym);
+  return {bodyPart, name:ex.n, desc:ex.desc, isGym:ex.isGym, weight:sug.weight, actualWeight:sug.weight,
+    reps:sug.reps, sets:sug.sets, difficulty:null, completedSets:0};
+}
+function generateRoutine(bodyParts, duration, env){
+  const totalSlots = slotsForDuration(duration);
+  const perPart = Math.max(1, Math.round(totalSlots/bodyParts.length));
+  const cap = expCap(state.profile.experience);
+  let items = [];
+  bodyParts.forEach(bp=>{
+    const exs = pickExercises(bp, env, perPart, cap);
+    exs.forEach(ex=> items.push(makeItem(bp, ex)));
+  });
+  let cardio = null;
+  if(state.profile.goal==="cut" || state.profile.goal==="lean" || duration>=60){
+    const c = CARDIO[Math.floor(Math.random()*CARDIO.length)];
+    cardio = {...c, minutes: duration>=90?20:(duration>=60?15:10)};
+  }
+  return {bodyParts, environment:env, duration, items, cardio, rest:null, startedAt:Date.now()};
+}
+function swapExercise(idx){
+  const it = pendingRoutine.items[idx];
+  const cap = expCap(state.profile.experience);
+  const pool = buildPool(it.bodyPart, pendingRoutine.environment, cap, null);
+  const usedNames = pendingRoutine.items.map(x=>x.name);
+  let candidates = pool.filter(e=>!usedNames.includes(e.n));
+  if(candidates.length===0) candidates = pool.filter(e=>e.n!==it.name);
+  if(candidates.length===0) candidates = pool;
+  const next = candidates[Math.floor(Math.random()*candidates.length)];
+  pendingRoutine.items[idx] = makeItem(it.bodyPart, next);
+  persistPending();
+  updateExerciseItem(idx);
+}
+function addExtraExercise(bodyPart, focus){
+  const cap = expCap(state.profile.experience);
+  const pool = buildPool(bodyPart, pendingRoutine.environment, cap, focus||null);
+  const usedNames = pendingRoutine.items.map(x=>x.name);
+  let candidates = pool.filter(e=>!usedNames.includes(e.n));
+  if(candidates.length===0) candidates = pool;
+  if(candidates.length===0) return;
+  const ex = candidates[Math.floor(Math.random()*candidates.length)];
+  pendingRoutine.items.push(makeItem(bodyPart, ex));
+  if(!pendingRoutine.bodyParts.includes(bodyPart)) pendingRoutine.bodyParts.push(bodyPart);
+  persistPending();
+  render();
+  setTimeout(()=>document.getElementById('routine-list')?.scrollIntoView({behavior:'smooth',block:'end'}),50);
+}
+
+
+/* ---------------- 렌더 ---------------- */
+function iconFor(tab){
+  const icons = {
+    today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v4M18 3v4M4 8h16M5 6h14a1 1 0 011 1v12a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1z"/></svg>',
+    calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
+    settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 01-4 0v-.09a1.7 1.7 0 00-1-1.55 1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.7 1.7 0 00.34-1.87 1.7 1.7 0 00-1.55-1H3a2 2 0 010-4h.09a1.7 1.7 0 001.55-1 1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06a1.7 1.7 0 001.87.34H9a1.7 1.7 0 001-1.55V3a2 2 0 014 0v.09a1.7 1.7 0 001 1.55 1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06a1.7 1.7 0 00-.34 1.87V9a1.7 1.7 0 001.55 1H21a2 2 0 010 4h-.09a1.7 1.7 0 00-1.55 1z"/></svg>'
+  };
+  return icons[tab];
+}
+
+function render(){
+  const app = document.getElementById('app');
+  if(!state.profile){
+    app.innerHTML = renderOnboarding();
+    bindOnboarding();
+    return;
+  }
+  let content = "";
+  if(currentTab==="today") content = renderToday();
+  else if(currentTab==="calendar") content = renderCalendar();
+  else if(currentTab==="settings") content = renderSettings();
+
+  app.innerHTML = `
+    <header class="top">
+      <div class="kicker">ROUTINE MAKER</div>
+      <h1>${tabTitle()}</h1>
+      ${pendingRoutine && pendingRoutine.startedAt ? `
+      <div class="status-bar" id="status-bar">
+        ${pendingRoutine.rest ? `
+        <div class="status-row rest">
+          <span class="mono" id="global-rest-timer">휴식 ${fmtTime(Math.max(0, Math.round((pendingRoutine.rest.endAt-Date.now())/1000)))}</span>
+          <button class="btn secondary small" id="skip-global-rest">건너뛰기</button>
+        </div>` : ""}
+        <div class="status-row">
+          <span>⏱ 운동 진행 시간</span>
+          <span class="mono" id="elapsed-time">${fmtElapsed(Date.now()-pendingRoutine.startedAt)}</span>
+        </div>
+      </div>` : ""}
+    </header>
+    <main>${content}</main>
+    <nav class="bottom">
+      ${["today","calendar","settings"].map(t=>`
+        <button data-tab="${t}" class="${currentTab===t?'active':''}">
+          ${iconFor(t)}
+          <span>${t==="today"?"오늘":t==="calendar"?"캘린더":"설정"}</span>
+        </button>`).join("")}
+    </nav>
+  `;
+  document.querySelectorAll('nav.bottom button').forEach(b=>{
+    b.onclick = ()=>{ currentTab = b.dataset.tab; render(); };
+  });
+  if(currentTab==="today") bindToday();
+  if(currentTab==="calendar") bindCalendar();
+  if(currentTab==="settings") bindSettings();
+}
+function tabTitle(){
+  if(currentTab==="today") return "오늘의 운동";
+  if(currentTab==="calendar") return "캘린더";
+  return "설정";
+}
+
+/* ---- 온보딩 ---- */
+function renderOnboarding(){
+  return `
+  <header class="top"><div class="kicker">ROUTINE MAKER</div><h1>시작하기</h1></header>
+  <main>
+    <div class="card">
+      <p style="color:var(--muted); font-size:13px; margin-top:0;">몇 가지 정보를 입력하면 나에게 맞는 운동 루틴을 만들어드려요.</p>
+      <div class="grid2">
+        <div class="field"><label>체중 (kg)</label><input id="ob-weight" type="number" placeholder="70"></div>
+        <div class="field"><label>신장 (cm)</label><input id="ob-height" type="number" placeholder="175"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>나이</label><input id="ob-age" type="number" placeholder="28"></div>
+        <div class="field"><label>성별</label>
+          <select id="ob-gender"><option value="male">남</option><option value="female">여</option><option value="other">기타</option></select>
+        </div>
+      </div>
+      <div class="field">
+        <label>운동 목표</label>
+        <div class="chip-group" id="ob-goal">
+          ${Object.entries(GOALS).map(([k,v])=>`<div class="chip" data-val="${k}">${v.label}</div>`).join("")}
+        </div>
+      </div>
+      <div class="field">
+        <label>운동 경험</label>
+        <div class="chip-group" id="ob-exp">
+          <div class="chip" data-val="beginner">초보자</div>
+          <div class="chip" data-val="intermediate">중급자</div>
+          <div class="chip" data-val="advanced">상급자</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>운동 환경</label>
+        <div class="chip-group" id="ob-env">
+          <div class="chip" data-val="gym">헬스장</div>
+          <div class="chip" data-val="bodyweight">맨몸운동</div>
+          <div class="chip" data-val="both">둘 다</div>
+        </div>
+        <div class="hint-text">"둘 다"는 기구 운동과 맨몸 운동을 한 루틴에 섞어서 추천해줘요.</div>
+      </div>
+      <div class="field">
+        <label>주당 운동 가능 일수</label>
+        <div class="chip-group" id="ob-days">
+          ${[2,3,4,5,6].map(n=>`<div class="chip" data-val="${n}">${n}일</div>`).join("")}
+        </div>
+      </div>
+      <button class="btn" id="ob-submit" style="margin-top:8px;">루틴 만들기 시작</button>
+    </div>
+  </main>`;
+}
+function bindOnboarding(){
+  let sel = {goal:null, exp:null, env:null, days:null};
+  ["ob-goal","ob-exp","ob-env","ob-days"].forEach(id=>{
+    document.getElementById(id).querySelectorAll('.chip').forEach(c=>{
+      c.onclick=()=>{
+        document.getElementById(id).querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+        c.classList.add('active');
+        const key = id.replace('ob-','');
+        sel[key] = c.dataset.val;
+      };
+    });
+  });
+  document.getElementById('ob-submit').onclick = async ()=>{
+    const weight = parseFloat(document.getElementById('ob-weight').value)||null;
+    const height = parseFloat(document.getElementById('ob-height').value)||null;
+    const age = parseInt(document.getElementById('ob-age').value)||null;
+    const gender = document.getElementById('ob-gender').value;
+    if(!sel.goal || !sel.exp || !sel.env || !sel.days){
+      showAlert("모든 항목을 선택해주세요."); return;
+    }
+    state.profile = {weight,height,age,gender,goal:sel.goal,experience:sel.exp,environment:sel.env,daysPerWeek:parseInt(sel.days)};
+    state.schedule = buildSchedule(state.profile.daysPerWeek);
+    await saveState();
+    render();
+  };
+}
+
+/* ---- 오늘 탭 ---- */
+function renderToday(){
+  const dow = new Date().getDay();
+  const scheduled = state.schedule.days.includes(dow);
+  const bps = scheduled ? state.schedule.rotation[rotationIndexForToday()] : null;
+  const doneToday = !!state.logs[todayStr()];
+
+  let banner = "";
+  if(scheduled && !doneToday){
+    banner = `<div class="banner">오늘은 <b>${bps.join(" · ")}</b> 운동 예정일이에요. 루틴을 생성해보세요!</div>`;
+  } else if(!scheduled){
+    banner = `<div class="banner" style="background:var(--surface2); border-color:var(--border); color:var(--muted);">오늘은 예정된 휴식일이에요. 원하면 직접 루틴을 만들 수도 있어요.</div>`;
+  } else if(doneToday){
+    banner = `<div class="banner">오늘 운동 기록을 이미 완료했어요 ✅</div>`;
+  }
+
+  let routineHtml = "";
+  if(pendingRoutine){
+    routineHtml = `
+    <div class="card accent-card">
+      <div class="row">
+        <h3 style="font-size:20px;">${pendingRoutine.bodyParts.join(" · ")}</h3>
+        <button class="btn ghost small" id="routine-back">‹ 다시 선택</button>
+      </div>
+      <div class="label" style="margin-bottom:6px;">${pendingRoutine.duration}분 · ${envLabel(pendingRoutine.environment)}</div>
+      <div id="routine-list">
+        ${pendingRoutine.items.map((it,i)=>renderExerciseItem(it,i)).join("")}
+      </div>
+      ${pendingRoutine.cardio?`
+      <div class="divider"></div>
+      <div class="exercise-item">
+        <div><div class="exercise-name">🏃 ${pendingRoutine.cardio.n}</div><div class="exercise-sub">${pendingRoutine.cardio.desc}</div></div>
+        <div class="stat-num">${pendingRoutine.cardio.minutes}분</div>
+      </div>`:""}
+      <div class="divider"></div>
+      <div class="label" style="margin-bottom:8px;">운동 추가하기 · 오늘 집중하고 싶은 부위</div>
+      <div class="chip-group" id="add-bp">
+        ${BODYPARTS.map(bp=>`<div class="chip" data-val="${bp}">${bp}</div>`).join("")}
+      </div>
+      <div class="chip-group" id="add-focus" style="margin-top:8px;"></div>
+      <button class="btn secondary small" id="add-ex-btn" style="margin-top:10px;" disabled>+ 이 부위 운동 추가</button>
+      <button class="btn lime" id="save-log" style="margin-top:14px;">운동 기록 저장</button>
+    </div>`;
+  }
+
+  return `
+    ${banner}
+    <div class="card">
+      <div class="label" style="margin-bottom:10px;">맞춤 루틴 생성</div>
+      <div class="field">
+        <label>부위 선택</label>
+        <div class="chip-group" id="gen-bp">
+          ${BODYPARTS.map(bp=>`<div class="chip" data-val="${bp}" style="${(bps&&bps.includes(bp))?'':''}">${bp}</div>`).join("")}
+        </div>
+      </div>
+      <div class="field">
+        <label>시간</label>
+        <div class="chip-group" id="gen-dur">
+          <div class="chip" data-val="30">30분 신속</div>
+          <div class="chip" data-val="60">1시간</div>
+          <div class="chip" data-val="90">1시간 30분</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>환경</label>
+        <div class="chip-group" id="gen-env">
+          <div class="chip" data-val="gym">헬스장</div>
+          <div class="chip" data-val="bodyweight">맨몸운동</div>
+          <div class="chip" data-val="both">둘 다</div>
+        </div>
+        <div class="hint-text">"둘 다"는 시간을 나누는 게 아니라, 같은 루틴 안에서 기구 운동과 맨몸 운동을 섞어서 추천해요. (예: 원하는 기구가 다 차있을 때 등)</div>
+      </div>
+      <button class="btn" id="gen-btn">루틴 생성하기</button>
+    </div>
+    ${routineHtml}
+  `;
+}
+function envLabel(e){ return e==="gym"?"헬스장":(e==="bodyweight"?"맨몸운동":"헬스장+맨몸"); }
+function renderExerciseItem(it,i){
+  const sets = it.sets;
+  const done = it.completedSets||0;
+  const dots = Array.from({length:sets}).map((_,si)=>{
+    const cls = si<done ? "set-dot done" : (si===done ? "set-dot current" : "set-dot");
+    return `<span class="${cls}"></span>`;
+  }).join("");
+
+  const restActive = !!pendingRoutine.rest;
+  let actionHtml;
+  if(done>=sets){
+    actionHtml = `
+      <div class="diff-btns">
+        <div class="diff-btn ${it.difficulty==='easy'?'sel':''}" data-d="easy">쉬움</div>
+        <div class="diff-btn ${it.difficulty==='medium'?'sel':''}" data-d="medium">적당</div>
+        <div class="diff-btn ${it.difficulty==='hard'?'sel':''}" data-d="hard">어려움</div>
+        <div class="diff-btn ${it.difficulty==='veryhard'?'sel':''}" data-d="veryhard">매우힘듦</div>
+      </div>
+      ${done>0?`<div class="set-action-row"><button class="btn ghost small undo-set" data-idx="${i}">◀ 마지막 세트 취소</button></div>`:""}`;
+  } else {
+    actionHtml = `
+      <div class="set-action-row">
+        <button class="btn small complete-set" data-idx="${i}" ${restActive?'disabled':''}>${restActive?'휴식 중':`${done+1}세트 완료`}</button>
+        ${done>0?`<button class="btn ghost small undo-set" data-idx="${i}">◀ 이전 세트</button>`:""}
+      </div>`;
+  }
+
+  const weightRow = it.isGym ? `
+      <div class="weight-row">
+        <span>수행 무게</span>
+        <input type="number" step="0.5" class="actual-weight" data-idx="${i}" value="${it.actualWeight ?? it.weight ?? ''}">
+        <span>kg${isDumbbell(it.name)?' <span class="db-note">(한쪽 기준)</span>':''}</span>
+      </div>` : "";
+
+  return `
+  <div class="exercise-item" data-idx="${i}">
+    <div style="flex:1;">
+      <div class="row" style="align-items:flex-start;">
+        <div>
+          <span class="bodypart-tag" style="background:${BP_COLOR[it.bodyPart]}22; color:${BP_COLOR[it.bodyPart]};">${it.bodyPart}</span>
+          <div class="exercise-name">${it.name}</div>
+        </div>
+        <button class="btn ghost small swap-ex" data-idx="${i}" style="flex-shrink:0;">🔄 다른 운동</button>
+      </div>
+      <div class="exercise-sub">${sets}세트 × ${it.reps}회</div>
+      ${weightRow}
+      ${it.desc?`<div class="exercise-desc">${it.desc}</div>`:""}
+      <a class="video-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(it.name+" 운동 방법")}" target="_blank" rel="noopener">▶ 자세 영상 찾아보기</a>
+      <div class="set-dots">${dots}</div>
+      ${actionHtml}
+    </div>
+  </div>`;
+}
+
+function updateExerciseItem(idx){
+  const container = document.querySelector(`.exercise-item[data-idx="${idx}"]`);
+  if(!container) return;
+  const temp = document.createElement('div');
+  temp.innerHTML = renderExerciseItem(pendingRoutine.items[idx], idx);
+  const newEl = temp.firstElementChild;
+  container.replaceWith(newEl);
+  bindExerciseItem(idx);
+}
+
+function bindExerciseItem(idx){
+  const row = document.querySelector(`.exercise-item[data-idx="${idx}"]`);
+  if(!row) return;
+  const it = pendingRoutine.items[idx];
+
+  const completeBtn = row.querySelector('.complete-set');
+  if(completeBtn) completeBtn.onclick = ()=>{
+    if(pendingRoutine.rest) return;
+    it.completedSets = (it.completedSets||0)+1;
+    persistPending();
+    startGlobalRest(restSeconds(it));
+    render();
+  };
+
+  const undoBtn = row.querySelector('.undo-set');
+  if(undoBtn) undoBtn.onclick = ()=>{
+    it.completedSets = Math.max(0,(it.completedSets||0)-1);
+    persistPending();
+    updateExerciseItem(idx);
+  };
+
+  const swapBtn = row.querySelector('.swap-ex');
+  if(swapBtn) swapBtn.onclick = ()=>{
+    const doSwap = ()=>swapExercise(idx);
+    if((it.completedSets||0) > 0){
+      showConfirm("지금까지 체크한 세트 기록이 초기화돼요. 다른 운동으로 바꿀까요?", doSwap);
+    } else {
+      doSwap();
+    }
+  };
+
+  const weightInput = row.querySelector('.actual-weight');
+  if(weightInput) weightInput.onchange = ()=>{
+    const v = parseFloat(weightInput.value);
+    it.actualWeight = isNaN(v) ? it.weight : v;
+    persistPending();
+  };
+
+  row.querySelectorAll('.diff-btn').forEach(btn=>{
+    btn.onclick = ()=>{
+      row.querySelectorAll('.diff-btn').forEach(x=>x.classList.remove('sel'));
+      btn.classList.add('sel');
+      it.difficulty = btn.dataset.d;
+      persistPending();
+    };
+  });
+}
+function bindToday(){
+  const dow = new Date().getDay();
+  const scheduled = state.schedule.days.includes(dow);
+  const bps = scheduled ? state.schedule.rotation[rotationIndexForToday()] : [];
+  let selBp = new Set(bps);
+  let selDur = null, selEnv = state.profile.environment;
+
+  const bpWrap = document.getElementById('gen-bp');
+  bpWrap.querySelectorAll('.chip').forEach(c=>{
+    if(selBp.has(c.dataset.val)) c.classList.add('active');
+    c.onclick=()=>{
+      c.classList.toggle('active');
+      if(selBp.has(c.dataset.val)) selBp.delete(c.dataset.val); else selBp.add(c.dataset.val);
+    };
+  });
+  const durWrap = document.getElementById('gen-dur');
+  durWrap.querySelectorAll('.chip').forEach(c=>{
+    c.onclick=()=>{ durWrap.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); c.classList.add('active'); selDur = parseInt(c.dataset.val); };
+  });
+  const envWrap = document.getElementById('gen-env');
+  envWrap.querySelectorAll('.chip').forEach(c=>{
+    if(c.dataset.val===selEnv) c.classList.add('active');
+    c.onclick=()=>{ envWrap.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); c.classList.add('active'); selEnv = c.dataset.val; };
+  });
+
+  document.getElementById('gen-btn').onclick = ()=>{
+    if(selBp.size===0){ showAlert("부위를 1개 이상 선택해주세요."); return; }
+    if(!selDur){ showAlert("운동 시간을 선택해주세요."); return; }
+    stopGlobalRest();
+    pendingRoutine = generateRoutine([...selBp], selDur, selEnv);
+    persistPending();
+    requestWakeLock();
+    render();
+    setTimeout(()=>document.getElementById('routine-list')?.scrollIntoView({behavior:'smooth',block:'center'}),50);
+  };
+
+  const backBtn = document.getElementById('routine-back');
+  if(backBtn) backBtn.onclick = ()=>{
+    showConfirm("지금 만든 루틴을 지우고 다시 선택할까요?", ()=>{
+      stopGlobalRest();
+      releaseWakeLock();
+      pendingRoutine = null;
+      persistPending();
+      render();
+    });
+  };
+
+  const skipGlobalBtn = document.getElementById('skip-global-rest');
+  if(skipGlobalBtn) skipGlobalBtn.onclick = ()=>{
+    stopGlobalRest();
+    pendingRoutine.rest = null;
+    persistPending();
+    render();
+  };
+
+  if(pendingRoutine){
+    requestWakeLock();
+    pendingRoutine.items.forEach((it,idx)=> bindExerciseItem(idx));
+    if(pendingRoutine.rest) runGlobalRestTick();
+
+    let addBp = null, addFocus = null;
+    const addBpWrap = document.getElementById('add-bp');
+    const addFocusWrap = document.getElementById('add-focus');
+    const addExBtn = document.getElementById('add-ex-btn');
+    const renderFocusChips = ()=>{
+      addFocus = null;
+      const cap = expCap(state.profile.experience);
+      const opts = focusOptions(addBp, pendingRoutine.environment, cap);
+      addFocusWrap.innerHTML = opts.length>1 ? opts.map(f=>`<div class="chip" data-val="${f}">${f}</div>`).join("") : "";
+      addFocusWrap.querySelectorAll('.chip').forEach(c=>{
+        c.onclick = ()=>{
+          const already = c.classList.contains('active');
+          addFocusWrap.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+          if(!already){ c.classList.add('active'); addFocus = c.dataset.val; } else { addFocus = null; }
+        };
+      });
+    };
+    if(addBpWrap){
+      addBpWrap.querySelectorAll('.chip').forEach(c=>{
+        c.onclick = ()=>{
+          addBpWrap.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+          c.classList.add('active');
+          addBp = c.dataset.val;
+          addExBtn.disabled = false;
+          renderFocusChips();
+        };
+      });
+      addExBtn.onclick = ()=>{
+        if(!addBp) return;
+        addExtraExercise(addBp, addFocus);
+      };
+    }
+  }
+
+  const saveBtn = document.getElementById('save-log');
+  if(saveBtn){
+    saveBtn.onclick = async ()=>{
+      stopGlobalRest();
+      releaseWakeLock();
+      const elapsedMin = pendingRoutine.startedAt ? Math.max(1, Math.round((Date.now()-pendingRoutine.startedAt)/60000)) : null;
+      const items = pendingRoutine.items.map(it=>({...it, difficulty: it.difficulty||"medium"}));
+      items.forEach(it=>{
+        const w = it.isGym ? (it.actualWeight ?? it.weight) : null;
+        state.exStats[it.name] = {weight:w, reps:it.reps, sets:it.sets, difficulty:it.difficulty};
+      });
+      state.logs[todayStr()] = {
+        bodyParts: pendingRoutine.bodyParts,
+        items,
+        cardio: pendingRoutine.cardio,
+        duration: pendingRoutine.duration,
+        durationActual: elapsedMin,
+        environment: pendingRoutine.environment
+      };
+      pendingRoutine = null;
+      state.pendingRoutine = null;
+      await saveState();
+      render();
+      if(elapsedMin) showAlert(`운동 기록이 저장됐어요!<br>오늘 총 운동 시간: <b>${elapsedMin}분</b>`);
+    };
+  }
+}
+
+/* ---- 캘린더 탭 ---- */
+function renderCalendar(){
+  const now = new Date();
+  const view = new Date(now.getFullYear(), now.getMonth()+calMonthOffset, 1);
+  const y = view.getFullYear(), m = view.getMonth();
+  const firstDow = new Date(y,m,1).getDay();
+  const daysInMonth = new Date(y,m+1,0).getDate();
+  let cells = [];
+  for(let i=0;i<firstDow;i++) cells.push(null);
+  for(let d=1; d<=daysInMonth; d++) cells.push(d);
+
+  const monthLabel = `${y}년 ${m+1}월`;
+
+  let cellsHtml = cells.map(d=>{
+    if(!d) return `<div class="cal-day empty"></div>`;
+    const ds = `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const log = state.logs[ds];
+    const isToday = ds===todayStr();
+    const dots = log ? log.bodyParts.slice(0,4).map(bp=>`<span class="dot" style="background:${BP_COLOR[bp]}"></span>`).join("") : "";
+    return `<div class="cal-day ${isToday?'today':''}" data-date="${ds}">${d}<div class="dots">${dots}</div></div>`;
+  }).join("");
+
+  return `
+    <div class="card">
+      <div class="row" style="margin-bottom:14px;">
+        <button class="btn ghost small" id="cal-prev">‹ 이전</button>
+        <h3 style="font-size:20px;">${monthLabel}</h3>
+        <button class="btn ghost small" id="cal-next">다음 ›</button>
+      </div>
+      <div class="cal-grid">
+        ${DOW.map(d=>`<div class="cal-dow">${d}</div>`).join("")}
+        ${cellsHtml}
+      </div>
+    </div>
+    <div class="card">
+      <div class="label" style="margin-bottom:8px;">부위 색상</div>
+      <div class="chip-group">
+        ${BODYPARTS.map(bp=>`<div class="chip" style="color:${BP_COLOR[bp]}; border-color:${BP_COLOR[bp]}55;"><span class="dot" style="background:${BP_COLOR[bp]}; display:inline-block; margin-right:6px;"></span>${bp}</div>`).join("")}
+      </div>
+    </div>
+  `;
+}
+function bindCalendar(){
+  document.getElementById('cal-prev').onclick = ()=>{ calMonthOffset--; render(); };
+  document.getElementById('cal-next').onclick = ()=>{ calMonthOffset++; render(); };
+  document.querySelectorAll('.cal-day[data-date]').forEach(c=>{
+    c.onclick = ()=> openDayModal(c.dataset.date);
+  });
+}
+function openDayModal(ds){
+  const log = state.logs[ds];
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  bg.innerHTML = `
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h3 style="font-size:22px; margin-bottom:12px;">${ds}</h3>
+      ${log ? `
+        <div class="chip-group" style="margin-bottom:12px;">${log.bodyParts.map(bp=>`<div class="chip active" style="background:${BP_COLOR[bp]}; color:#111; border-color:${BP_COLOR[bp]};">${bp}</div>`).join("")}</div>
+        ${log.items.map(it=>{
+          const w = it.actualWeight ?? it.weight;
+          return `
+          <div class="exercise-item">
+            <div><div class="exercise-name">${it.name}</div><div class="exercise-sub">${it.sets}세트 × ${it.reps}회 ${w?` · ${w}kg${isDumbbell(it.name)?' (한쪽 기준)':''}`:""}</div></div>
+          </div>`;
+        }).join("")}
+        ${log.cardio?`<div class="exercise-item"><div><div class="exercise-name">🏃 ${log.cardio.n}</div></div><div class="stat-num">${log.cardio.minutes}분</div></div>`:""}
+        <button class="btn secondary" id="del-log" style="margin-top:14px;">기록 삭제</button>
+      ` : `
+        <div class="field"><label>부위 (쉼표로 구분, 예: 가슴,팔)</label><input id="manual-bp" placeholder="가슴,팔"></div>
+        <div class="field"><label>운동 내용</label><textarea id="manual-note" rows="3" placeholder="벤치프레스 40kg 3x10, 덤벨컬 12kg 3x12"></textarea></div>
+        <div class="field"><label>운동 시간 (분)</label><input id="manual-dur" type="number" placeholder="45"></div>
+        <button class="btn lime" id="manual-save">기록 추가</button>
+      `}
+      <button class="btn ghost" id="modal-close" style="margin-top:10px;">닫기</button>
+    </div>
+  `;
+  document.body.appendChild(bg);
+  bg.onclick = (e)=>{ if(e.target===bg) bg.remove(); };
+  bg.querySelector('#modal-close').onclick = ()=>bg.remove();
+  const delBtn = bg.querySelector('#del-log');
+  if(delBtn) delBtn.onclick = async ()=>{
+    delete state.logs[ds];
+    await saveState();
+    bg.remove(); render();
+  };
+  const saveBtn = bg.querySelector('#manual-save');
+  if(saveBtn) saveBtn.onclick = async ()=>{
+    const bpRaw = bg.querySelector('#manual-bp').value.trim();
+    const bpList = bpRaw ? bpRaw.split(",").map(s=>s.trim()).filter(s=>BODYPARTS.includes(s)) : [];
+    const note = bg.querySelector('#manual-note').value.trim();
+    const dur = parseInt(bg.querySelector('#manual-dur').value)||null;
+    if(bpList.length===0){ showAlert("올바른 부위를 입력해주세요 (가슴/등/어깨/하체/팔/코어)"); return; }
+    state.logs[ds] = {bodyParts:bpList, items:[{name:note||"직접 기록", sets:null, reps:null, weight:null}], cardio:null, duration:dur, environment:state.profile.environment};
+    await saveState();
+    bg.remove(); render();
+  };
+}
+
+/* ---- 설정 탭 ---- */
+function renderSettings(){
+  const p = state.profile;
+  return `
+    <div class="card">
+      <div class="label" style="margin-bottom:10px;">내 정보</div>
+      <div class="grid2">
+        <div class="field"><label>체중(kg)</label><input id="st-weight" type="number" value="${p.weight||''}"></div>
+        <div class="field"><label>신장(cm)</label><input id="st-height" type="number" value="${p.height||''}"></div>
+      </div>
+      <div class="field"><label>나이</label><input id="st-age" type="number" value="${p.age||''}"></div>
+      <div class="field">
+        <label>목표</label>
+        <select id="st-goal">${Object.entries(GOALS).map(([k,v])=>`<option value="${k}" ${p.goal===k?'selected':''}>${v.label}</option>`).join("")}</select>
+        <div style="color:var(--muted); font-size:12px; margin-top:6px;">${GOALS[p.goal].desc}</div>
+      </div>
+      <div class="field">
+        <label>운동 경험</label>
+        <select id="st-exp">
+          <option value="beginner" ${p.experience==='beginner'?'selected':''}>초보자</option>
+          <option value="intermediate" ${p.experience==='intermediate'?'selected':''}>중급자</option>
+          <option value="advanced" ${p.experience==='advanced'?'selected':''}>상급자</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>운동 환경</label>
+        <select id="st-env">
+          <option value="gym" ${p.environment==='gym'?'selected':''}>헬스장</option>
+          <option value="bodyweight" ${p.environment==='bodyweight'?'selected':''}>맨몸운동</option>
+          <option value="both" ${p.environment==='both'?'selected':''}>둘 다</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>주당 운동 일수</label>
+        <select id="st-days">${[2,3,4,5,6].map(n=>`<option value="${n}" ${p.daysPerWeek===n?'selected':''}>${n}일</option>`).join("")}</select>
+      </div>
+      <button class="btn" id="st-save">저장</button>
+    </div>
+
+    <div class="card">
+      <div class="label" style="margin-bottom:10px;">이번 주 운동 스케줄</div>
+      <div class="chip-group">
+        ${state.schedule.days.map((d,i)=>`<div class="chip active">${DOW[d]}요일 · ${state.schedule.rotation[i%state.schedule.rotation.length].join("/")}</div>`).join("")}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label" style="margin-bottom:10px;">알림</div>
+      <div class="field"><label>알림 시간</label><input id="st-notify-time" type="time" value="${state.settings.notifyTime}"></div>
+      <button class="btn ${state.settings.notify?'lime':'secondary'}" id="st-notify-btn">${state.settings.notify?"알림 켜짐 ✓":"운동 알림 켜기"}</button>
+      <div style="color:var(--muted); font-size:12px; margin-top:8px;">예정된 운동일 알림 시간에 브라우저 알림을 보내요 (이 화면이 열려있는 동안).</div>
+    </div>
+
+    <div class="card">
+      <div class="label" style="margin-bottom:10px; color:var(--danger);">데이터 관리</div>
+      <button class="btn secondary" id="st-reset">모든 데이터 초기화</button>
+    </div>
+  `;
+}
+function bindSettings(){
+  document.getElementById('st-save').onclick = async ()=>{
+    const p = state.profile;
+    p.weight = parseFloat(document.getElementById('st-weight').value)||null;
+    p.height = parseFloat(document.getElementById('st-height').value)||null;
+    p.age = parseInt(document.getElementById('st-age').value)||null;
+    p.goal = document.getElementById('st-goal').value;
+    p.experience = document.getElementById('st-exp').value;
+    p.environment = document.getElementById('st-env').value;
+    const newDays = parseInt(document.getElementById('st-days').value);
+    if(newDays !== p.daysPerWeek){
+      p.daysPerWeek = newDays;
+      state.schedule = buildSchedule(newDays);
+    }
+    await saveState();
+    render();
+  };
+  document.getElementById('st-notify-btn').onclick = async ()=>{
+    if(!state.settings.notify){
+      if("Notification" in window){
+        const perm = await Notification.requestPermission();
+        if(perm!=="granted"){ showAlert("브라우저 알림 권한이 필요해요."); return; }
+      }
+      state.settings.notify = true;
+    } else {
+      state.settings.notify = false;
+    }
+    await saveState();
+    render();
+  };
+  document.getElementById('st-notify-time').onchange = async (e)=>{
+    state.settings.notifyTime = e.target.value;
+    await saveState();
+  };
+  document.getElementById('st-reset').onclick = ()=>{
+    showConfirm("모든 데이터를 삭제할까요? 되돌릴 수 없어요.", async ()=>{
+      stopGlobalRest();
+      releaseWakeLock();
+      pendingRoutine = null;
+      state = defaultState();
+      await saveState();
+      render();
+    });
+  };
+}
+
+/* ---------------- 알림 체크 루프 ---------------- */
+setInterval(()=>{
+  if(!state || !state.profile || !state.settings.notify) return;
+  const now = new Date();
+  const hhmm = String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+  if(hhmm !== state.settings.notifyTime) return;
+  const dow = now.getDay();
+  if(!state.schedule.days.includes(dow)) return;
+  if(state.logs[todayStr()]) return;
+  if("Notification" in window && Notification.permission==="granted"){
+    const bps = state.schedule.rotation[rotationIndexForToday()];
+    new Notification("오늘 운동 시간이에요 💪", {body:`${bps.join(", ")} 운동이 예정되어 있어요.`});
+  }
+}, 30000);
+
+/* ---------------- 경과 운동시간 배지 갱신 ---------------- */
+setInterval(()=>{
+  if(!pendingRoutine || !pendingRoutine.startedAt) return;
+  const el = document.getElementById('elapsed-time');
+  if(el) el.textContent = fmtElapsed(Date.now()-pendingRoutine.startedAt);
+}, 1000);
+
+/* ---------------- 초기화 ---------------- */
+(async function init(){
+  state = await loadState();
+  pendingRoutine = state.pendingRoutine || null;
+  if(pendingRoutine && !pendingRoutine.startedAt){
+    pendingRoutine.startedAt = Date.now();
+    persistPending();
+  }
+  render();
+  if(pendingRoutine){
+    requestWakeLock();
+    if(pendingRoutine.rest) runGlobalRestTick();
+  }
+})();
+</script>
+</body>
+</html>

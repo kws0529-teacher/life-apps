@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우성쌤의 일상활용 앱</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<style>
+  :root{
+    --ink:#0f172a;
+    --ink-soft:#64748b;
+    --paper:#fbfaf8;
+    --card:#ffffff;
+    --line:#eae5db;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+
+  /* 배경 배경 오로라 블러 효과 */
+  .blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.35;z-index:0;pointer-events:none;}
+  .blob1{width:420px;height:420px;background:#f7c9d8;top:-140px;right:-120px;}
+  .blob2{width:380px;height:380px;background:#c7d9f7;bottom:-160px;left:-140px;}
+
+  .wrap{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:64px 24px 80px;}
+
+  header{margin-bottom:52px;}
+  h1{
+    font-family:'Times New Roman',Times,serif;
+    font-style:italic;
+    font-size:2.5rem;
+    letter-spacing:-0.01em;
+    line-height:1.25;
+  }
+  header p{margin-top:14px;color:var(--ink-soft);font-size:1.05rem;max-width:52ch;}
+
+  .subject{margin-bottom:48px;}
+  .subject-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .subject-dot{width:10px;height:10px;border-radius:50%;background:var(--sc,#3b82f6);flex:0 0 auto;}
+  .subject-head h2{font-size:1.15rem;font-weight:800;color:var(--ink);}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(230px,1fr));gap:16px;}
+
+  /* 카드 기본 스타일 */
+  .card{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px;
+    text-decoration:none;
+    color:inherit;
+    overflow:hidden;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:-30px;right:-30px;
+    width:90px;height:90px;
+    border-radius:50%;
+    background:var(--sc,#3b82f6);
+    opacity:.10;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    border-color:var(--sc,#3b82f6);
+    box-shadow:0 14px 28px -16px rgba(15,23,42,.18);
+  }
+  .card-mark{
+    width:44px;height:44px;
+    border-radius:12px;
+    background:var(--sc,#3b82f6);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;
+    font-size:1.2rem;
+    flex:0 0 auto;
+  }
+  .card-title{font-weight:700;font-size:1.05rem;}
+  .card-desc{color:var(--ink-soft);font-size:.87rem;margin-top:4px;line-height:1.55;}
+
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.85rem;position:relative;z-index:1;}
+
+  @media (max-width:600px){
+    .wrap{padding:44px 18px 60px;}
+    h1{font-size:1.9rem;}
+    .grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<div class="wrap">
+  <header>
+    <h1>Routine Maker</h1>
+    <p>나만의 운동 루틴을 생성하고 목표를 관리하세요. 기록은 현재 기기에 안전하게 저장됩니다.</p>
+  </header>
+
+  <!-- 메인 루틴 섹션 (JS에서 데이터가 여기에 렌더링됩니다) -->
+  <div class="subject" style="--sc:#3b82f6;">
+    <div class="subject-head">
+      <span class="subject-dot"></span>
+      <h2>내 운동 루틴 목록</h2>
+    </div>
+    <div id="routine-list" class="grid">
+      <!-- 앱 스크립트가 실행되기 전 기본 안내 카드 -->
+      <div class="card">
+        <span class="card-mark">🏋️</span>
+        <div>
+          <span class="card-title">루틴을 불러오는 중...</span>
+          <p class="card-desc">잠시만 기다려 주세요.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Routine Maker · 개인 브라우저 LocalStorage 저장 방식 지원</footer>
+</div>
+
+<!-- 작성하신 JavaScript 스크립트 연결 (파일명이 다르다면 파일명에 맞게 수정하세요) -->
+<script src="workout routine maker"></script>
+</body>
+</html>
+
+<a href="workout routine maker.html">운동 루트인</a>
